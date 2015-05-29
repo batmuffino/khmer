@@ -10,7 +10,7 @@
 De-interleave a file.
 
 Take an interleaved set of reads (/1 and /2), and extract them into separate
-files (.1 and .2).
+files (.2 and .2).
 
 % scripts/split-paired-reads.py <infile>
 
@@ -63,7 +63,7 @@ def get_parser():
         epilog=textwrap.dedent(epilog),
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument('infile',nargs='?', default='/dev/stdin')
+    parser.add_argument('infile', nargs='?', default='/dev/stdin')
 
     parser.add_argument('-o', '--output-dir', metavar="output_directory",
                         dest='output_directory', default='', help='Output '
@@ -71,10 +71,10 @@ def get_parser():
                         'directory if necessary')
 
     parser.add_argument('-1', '--output-first', metavar='output_first',
-                        default=None, help='Output "left" reads to this '
+                        help='Output "left" reads to this '
                         'file')
     parser.add_argument('-2', '--output-second', metavar='output_second',
-                        default=None, help='Output "right" reads to this '
+                        help='Output "right" reads to this '
                         'file')
     parser.add_argument('-p', '--force-paired', action='store_true',
                         help='Require that reads be interleaved')
@@ -107,10 +107,11 @@ def main():
         out2 = os.path.basename(infile) + '.2'
 
     # OVERRIDE output file locations with -1, -2
-    if args.output_first:
+    if args.output_first and args.output_second:
         out1 = args.output_first
-    if args.output_second:
         out2 = args.output_second
+    else:
+        print >>sys.stderr, 'output files are missing'
 
     fp_out1 = open(out1, 'w')
     fp_out2 = open(out2, 'w')
@@ -122,28 +123,28 @@ def main():
     screed_iter = screed.open(infile, parse_description=False)
 
     # walk through all the reads in broken-paired mode.
-    for index, is_pair, record1, record2 in broken_paired_reader(screed_iter):
-        if index % 100000 == 0 and index:
-            print >> sys.stderr, '...', index
-
+    paired_iter = broken_paired_reader(screed_iter)
+    for n, is_pair, read1, read2 in paired_iter:
+        if n % 10000 == 0:
+            print >>sys.stderr, '...', n
         # are we requiring pairs?
         if args.force_paired and not is_pair:
             print >>sys.stderr, 'ERROR, %s is not part of a pair' % \
-                record1.name
+                read1.name
             sys.exit(1)
 
         if is_pair:
-            write_record(record1, fp_out1)
+            write_record(read1, fp_out1)
             counter1 += 1
-            write_record(record2, fp_out2)
+            write_record(read2, fp_out2)
             counter2 += 1
         else:
-            name = record1.name
+            name = read1.name
             if check_is_left(name):
-                write_record(record1, fp_out1)
+                write_record(read1, fp_out1)
                 counter1 += 1
             elif check_is_right(name):
-                write_record(record1, fp_out2)
+                write_record(read1, fp_out2)
                 counter2 += 1
             else:
                 print >>sys.stderr, \
