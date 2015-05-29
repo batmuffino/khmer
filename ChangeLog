@@ -1,3 +1,9 @@
+2015-05-29  Kevin Murray  <spam@kdmurray.id.au>
+
+   * lib/counting.cc: Fix infinite loop in gzipped CountingHash I/O
+   * tests/test_counting_hash.py: Add test of large CountingHash I/O
+   * setup.cfg: Skip tests with the 'huge' label by default
+
 2015-05-26  Kevin Murray  <spam@kdmurray.id.au>
 
    * lib/Makefile: Remove old libkhmer.so versions during make clean
