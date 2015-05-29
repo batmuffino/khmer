@@ -8,4 +8,4 @@
 >5 byte 3 k-mer tagset
 >5 byte 4 k-mer partition stoptags
 >5 byte 5 k-mer partition subset
-
+>5 byte 6 labels/tags for implicit k-mer De Bruijn graph
