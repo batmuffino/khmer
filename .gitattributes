@@ -1,1 +1,2 @@
 khmer/_version.py export-subst
+ChangeLog    merge=merge-changelog
