@@ -135,7 +135,7 @@ def test_get_raw_tables_view():
         assert sum(memv.tolist()) == 1
 
 
-@attr('linux')
+@attr('huge')
 def test_toobig():
     try:
         ct = khmer.new_counting_hash(30, 1e13, 1)
