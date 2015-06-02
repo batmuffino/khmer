@@ -1,3 +1,7 @@
+2015-06-02  Sherine Awad  <drmahmoud@ucdavis.edu>
+   * Fix minor issues in split-paired-reads 
+   * Change split-paired-reads tests accordingly 
+
 2015-05-26  Kevin Murray  <spam@kdmurray.id.au>
 
    * lib/Makefile: Remove old libkhmer.so versions during make clean
