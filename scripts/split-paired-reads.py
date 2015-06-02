@@ -96,7 +96,6 @@ def main():
     check_space(filenames, args.force)
 
     # decide where to put output files - specific directory? or just default?
-    # OVERRIDE output file locations with -1, -2
     if (os.path.basename(infile) == 'stdin'
             and not (args.output_first and args.output_second)):
         print >>sys.stderr, 'Output files are missing'
@@ -111,6 +110,7 @@ def main():
         out1 = os.path.basename(infile) + '.1'
         out2 = os.path.basename(infile) + '.2'
 
+    # OVERRIDE output file locations with -1, -2
     if args.output_first and args.output_second:
         out1 = args.output_first
         out2 = args.output_second
@@ -120,7 +120,7 @@ def main():
 
     counter1 = 0
     counter2 = 0
-    n = None
+    index = None
 
     screed_iter = screed.open(infile, parse_description=False)
 
@@ -128,7 +128,7 @@ def main():
     paired_iter = broken_paired_reader(screed_iter)
     for index, is_pair, record1, record2 in paired_iter:
         if index % 10000 == 0:
-            print >>sys.stderr, '...', n
+            print >>sys.stderr, '...', index
         # are we requiring pairs?
         if args.force_paired and not is_pair:
             print >>sys.stderr, 'ERROR, %s is not part of a pair' % \

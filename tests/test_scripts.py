@@ -2171,7 +2171,7 @@ def test_split_paired_reads_2_fq():
 
 def test_split_paired_reads_2_mixed_fq_require_pair():
     # test input file
-    infile = utils.get_temp_filename('paired-mixed.fq')
+    infile = utils.get_temp_filename('test.fq')
     shutil.copyfile(utils.get_test_data('paired-mixed.fq'), infile)
     in_dir = os.path.dirname(infile)
     outfile1 = utils.get_temp_filename('paired-mixed.fa.pe')
@@ -3215,7 +3215,7 @@ def test_roundtrip_casava_format_2():
     shutil.copyfile(utils.get_test_data('casava_18-pe.fq'), infile)
 
     _, out, err = utils.runscript('split-paired-reads.py', [infile,
-                                  '-1', outfile1, '-2', outfile2])
+                                                            '-1', outfile1, '-2', outfile2])
 
     utils.runscript('interleave-reads.py', [outfile1,
                                             outfile2, '-o', outfile], in_dir)
@@ -3253,7 +3253,7 @@ def test_roundtrip_commented_format():
                     infile)
 
     _, out, err = utils.runscript('split-paired-reads.py', [infile,
-                                  '-1', outfile1, '-2', outfile2])
+                                                            '-1', outfile1, '-2', outfile2])
 
     utils.runscript('interleave-reads.py', [outfile1,
                                             outfile2, '-o',
