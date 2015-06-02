@@ -10,7 +10,7 @@
 De-interleave a file.
 
 Take an interleaved set of reads (/1 and /2), and extract them into separate
-files (.2 and .2).
+files (.1 and .2).
 
 % scripts/split-paired-reads.py <infile>
 
@@ -71,10 +71,10 @@ def get_parser():
                         'directory if necessary')
 
     parser.add_argument('-1', '--output-first', metavar='output_first',
-                        help='Output "left" reads to this '
+                        default=None, help='Output "left" reads to this '
                         'file')
     parser.add_argument('-2', '--output-second', metavar='output_second',
-                        help='Output "right" reads to this '
+                        default=None, help='Output "right" reads to this '
                         'file')
     parser.add_argument('-p', '--force-paired', action='store_true',
                         help='Require that reads be interleaved')
@@ -97,28 +97,27 @@ def main():
     check_space(filenames, args.force)
 
     # decide where to put output files - specific directory? or just default?
-    if args.output_directory:
-        if not os.path.exists(args.output_directory):
-            os.makedirs(args.output_directory)
-        out1 = args.output_directory + '/' + os.path.basename(infile) + '.1'
-        out2 = args.output_directory + '/' + os.path.basename(infile) + '.2'
-    else:
-        out1 = os.path.basename(infile) + '.1'
-        out2 = os.path.basename(infile) + '.2'
-
     # OVERRIDE output file locations with -1, -2
-    if args.output_first and args.output_second:
+    if infile == '/dev/stdin' and \
+       not (args.output_first and args.output_second):
+        print >>sys.stderr, 'Output files are missing'
+        sys.exit(1)
+    elif args.output_first and args.output_second:
         out1 = args.output_first
         out2 = args.output_second
+    elif args.output_directory:
+        if not os.path.exists(args.output_directory):
+            os.makedirs(args.output_directory)
     else:
-        print >>sys.stderr, 'output files are missing'
+        out1 = args.output_directory + '/' + os.path.basename(infile) + '.1'
+        out2 = args.output_directory + '/' + os.path.basename(infile) + '.2'
 
     fp_out1 = open(out1, 'w')
     fp_out2 = open(out2, 'w')
 
     counter1 = 0
     counter2 = 0
-    index = None
+    n = None
 
     screed_iter = screed.open(infile, parse_description=False)
 
