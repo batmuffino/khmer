@@ -94,13 +94,11 @@ def main():
 
     filenames = [infile]
     check_space(filenames, args.force)
-
     # decide where to put output files - specific directory? or just default?
-    if (os.path.basename(infile) == 'stdin'
-            and not (args.output_first and args.output_second)):
-        print >>sys.stderr, 'Output files are missing'
-        sys.exit(1)
-
+    if os.path.basename(infile) == 'stdin':
+        if not (args.output_first and args.output_second):
+            print >>sys.stderr, 'Output files are missing'
+            sys.exit(1)
     if args.output_directory:
         if not os.path.exists(args.output_directory):
             os.makedirs(args.output_directory)
@@ -111,13 +109,13 @@ def main():
         out2 = os.path.basename(infile) + '.2'
 
     # OVERRIDE output file locations with -1, -2
-    if args.output_first and args.output_second:
+    if args.output_first:
         out1 = args.output_first
+    if args.output_second:
         out2 = args.output_second
 
     fp_out1 = open(out1, 'w')
     fp_out2 = open(out2, 'w')
-
     counter1 = 0
     counter2 = 0
     index = None
