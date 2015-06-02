@@ -2437,7 +2437,7 @@ count_trim_on_abundance(khmer_KCountingHash_Object * me, PyObject * args)
 
     Py_END_ALLOW_THREADS;
 
-    PyObject * trim_seq = PyBytes_FromStringAndSize(seq, trim_at);
+    PyObject * trim_seq = PyUnicode_FromStringAndSize(seq, trim_at);
     if (trim_seq == NULL) {
         return NULL;
     }
@@ -2469,7 +2469,7 @@ count_trim_below_abundance(khmer_KCountingHash_Object * me, PyObject * args)
 
     Py_END_ALLOW_THREADS;
 
-    PyObject * trim_seq = PyBytes_FromStringAndSize(seq, trim_at);
+    PyObject * trim_seq = PyUnicode_FromStringAndSize(seq, trim_at);
     if (trim_seq == NULL) {
         return NULL;
     }
@@ -4507,7 +4507,7 @@ MOD_INIT(_khmer)
     using namespace python;
 
     if (PyType_Ready(&khmer_KHashtable_Type) < 0) {
-        return;
+        return MOD_ERROR_VAL;
     }
 
     khmer_KCountingHash_Type.tp_base = &khmer_KHashtable_Type;
