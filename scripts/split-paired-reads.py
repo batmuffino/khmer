@@ -92,25 +92,28 @@ def main():
 
     infile = args.infile
 
-    check_input_files(infile, args.force)
     filenames = [infile]
     check_space(filenames, args.force)
 
     # decide where to put output files - specific directory? or just default?
     # OVERRIDE output file locations with -1, -2
-    if infile == '/dev/stdin' and \
-       not (args.output_first and args.output_second):
+    if (os.path.basename(infile) == 'stdin'
+            and not (args.output_first and args.output_second)):
         print >>sys.stderr, 'Output files are missing'
         sys.exit(1)
-    elif args.output_first and args.output_second:
-        out1 = args.output_first
-        out2 = args.output_second
-    elif args.output_directory:
+
+    if args.output_directory:
         if not os.path.exists(args.output_directory):
             os.makedirs(args.output_directory)
-    else:
         out1 = args.output_directory + '/' + os.path.basename(infile) + '.1'
         out2 = args.output_directory + '/' + os.path.basename(infile) + '.2'
+    else:
+        out1 = os.path.basename(infile) + '.1'
+        out2 = os.path.basename(infile) + '.2'
+
+    if args.output_first and args.output_second:
+        out1 = args.output_first
+        out2 = args.output_second
 
     fp_out1 = open(out1, 'w')
     fp_out2 = open(out2, 'w')
@@ -123,27 +126,27 @@ def main():
 
     # walk through all the reads in broken-paired mode.
     paired_iter = broken_paired_reader(screed_iter)
-    for n, is_pair, read1, read2 in paired_iter:
-        if n % 10000 == 0:
+    for index, is_pair, record1, record2 in paired_iter:
+        if index % 10000 == 0:
             print >>sys.stderr, '...', n
         # are we requiring pairs?
         if args.force_paired and not is_pair:
             print >>sys.stderr, 'ERROR, %s is not part of a pair' % \
-                read1.name
+                record1.name
             sys.exit(1)
 
         if is_pair:
-            write_record(read1, fp_out1)
+            write_record(record1, fp_out1)
             counter1 += 1
-            write_record(read2, fp_out2)
+            write_record(record2, fp_out2)
             counter2 += 1
         else:
-            name = read1.name
+            name = record1.name
             if check_is_left(name):
-                write_record(read1, fp_out1)
+                write_record(record1, fp_out1)
                 counter1 += 1
             elif check_is_right(name):
-                write_record(read1, fp_out2)
+                write_record(record1, fp_out2)
                 counter2 += 1
             else:
                 print >>sys.stderr, \
