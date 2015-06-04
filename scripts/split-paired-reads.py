@@ -95,9 +95,10 @@ def main():
     filenames = [infile]
     check_space(filenames, args.force)
     # decide where to put output files - specific directory? or just default?
-    if os.path.basename(infile) == 'stdin':
+    if infile == '/dev/stdin':
         if not (args.output_first and args.output_second):
-            print >>sys.stderr, 'Output files are missing'
+            print >>sys.stderr, 'Accepting input from stdin; output filenames must be provided.'
+
             sys.exit(1)
     if args.output_directory:
         if not os.path.exists(args.output_directory):
@@ -116,6 +117,7 @@ def main():
 
     fp_out1 = open(out1, 'w')
     fp_out2 = open(out2, 'w')
+
     counter1 = 0
     counter2 = 0
     index = None
